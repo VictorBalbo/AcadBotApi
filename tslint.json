@@ -1,0 +1,51 @@
+{
+  "rules": {
+    "space-within-parens": [true, "always"],
+    "prefer-const": true,
+    "no-var-keyword": true,
+    "object-literal-shorthand": true,
+    "object-literal-key-quotes": [true, "as-needed"],
+    "quotemark": [true,"single"],
+    "no-eval": true,
+    "no-parameter-reassignment": true,
+    "align": [
+      true,
+      "arguments",
+      "parameters"
+    ],
+    "arrow-parens": false,
+    "no-duplicate-imports": true,
+    "one-variable-per-declaration": [true, "ignore-for-loop"],
+    "triple-equals": [true, "allow-null-check"],
+    "strict-boolean-expressions": [
+      true,
+      "allow-null-union",
+      "allow-undefined-union",
+      "allow-string",
+      "allow-mix"
+    ],
+    "curly": [true, "ignore-same-line"],
+    "comment-format": [true, "check-space"],
+    "indent": [true, "tabs"],
+    "whitespace": [
+      true,
+      "check-branch",
+      "check-decl",
+      "check-operator",
+      "check-preblock"
+    ],
+    "eofline": true,
+    "max-line-length": [true, 100],
+    "trailing-comma": [
+      true,
+      {
+        "multiline": "always",
+        "singleline": "never"
+      }
+    ],
+    "semicolon": [true, "never"],
+    "no-construct": true,
+    "radix": true,
+    "no-this-assignment": true
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "name": "acadbotapi",
+  "version": "1.0.0",
+  "description": "A REST Api to get studants notes on Sigaa page",
+  "main": "index.js",
+  "scripts": {
+    "watch": "tsc -w",
+    "compile": "tsc && node ./dist/index",
+    "start": "nodemon -e ts --exec \"npm run compile\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Victor Balbo",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^1.14.11"
+  },
+  "dependencies": {
+    "@types/cheerio": "^0.22.7",
+    "@types/express": "^4.11.0",
+    "@types/he": "^0.5.29",
+    "@types/mongoose": "^5.0.7",
+    "@types/request-promise-native": "^1.0.14",
+    "cheerio": "^1.0.0-rc.2",
+    "express": "^4.16.3",
+    "he": "^1.1.1",
+    "mongoose": "^5.0.10",
+    "request": "^2.85.0",
+    "request-promise-native": "^1.0.5"
+  }
+}
