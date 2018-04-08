@@ -1,6 +1,6 @@
 import { Schema, model, Document } from 'mongoose'
 
-export interface INote extends Document{
+export interface INote extends Document {
 	Name: string
 	Value: string
 	Max: string

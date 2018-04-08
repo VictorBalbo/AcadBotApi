@@ -4,17 +4,17 @@ import { NoteSchema, INote } from './Note'
 export interface ILesson extends Document {
 	Name: String
 	Notes: [INote]
-	StudentIdentity: String
+	AcadUser: String
 }
 
 const LessonSchema = new Schema({
 	Name: String,
 	Notes: [NoteSchema],
-	StudentIdentity: String,
+	AcadUser: String,
 })
 
 LessonSchema.methods.toString = function(): string {
-	let lessonString = `${this.Name} \n`
+	let lessonString = `<b>${this.Name}</b> \n`
 	if (this.Notes.length === 0) return lessonString + 'Sem notas'
 	this.Notes.forEach((note: String) => {
 		lessonString += note.toString()

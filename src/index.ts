@@ -1,18 +1,17 @@
 import { Server } from './server'
-import SigClient from './Clients/SigClient'
 import { Student } from './Models/Student'
+import { FetchStudent } from './Controllers/StudentController'
 
 const server = new Server()
 server.start()
 
-Student.find((err, students) => {
-	if (!students) return
-	students.forEach(async student => {
-		const client = new SigClient(
-			student.AcadUser,
-			student.AcadPassword,
-			student.BlipIdentity,
-		)
-		await client.FetchNotes()
-	})
-})
+setInterval(async () => {
+	try {
+		const students = await Student.find()
+		students.forEach(async student => {
+			await FetchStudent(student)
+		})
+	} catch (error) {
+		console.log(error)
+	}
+},          1200000) // 20 mins

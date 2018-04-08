@@ -2,6 +2,7 @@ import { load as Load } from 'cheerio'
 import { HttpClient } from './httpClient'
 import { Note, INote } from '../Models/Note'
 import { Lesson, ILesson } from '../Models/Lesson'
+import { CONSTANTS } from '../Constants'
 
 const DISCENTE_URL =
 	'https://sig.cefetmg.br/sigaa/portais/discente/discente.jsf'
@@ -61,7 +62,6 @@ export default class AcadClient {
 		if (lessonsRequests.length === 0) {
 			throw Error('Epa, não tem materia nenhuma D:')
 		}
-		console.log(`Tem ${lessonsRequests.length} materias`)
 
 		for (let i = 0; i < lessonsRequests.length; i++) {
 			const lessonPage = await this.httpClient.SendRequest(
@@ -111,23 +111,28 @@ export default class AcadClient {
 	}
 
 	private async ParseNotes(notesPage: string, lessonName: string) {
-		console.log(`Parsing ${lessonName}`)
-
-		let lesson = await Lesson.findOne({ Name: lessonName, StudentIdentity: this.BlipIdentity }).exec()
-		if (!lesson) lesson = new Lesson({ Name: lessonName, StudentIdentity: this.BlipIdentity })
+		let lesson = await Lesson.findOne({
+			Name: lessonName,
+			AcadUser: this.AcadUser,
+		})
+		if (!lesson) {
+			lesson = new Lesson({
+				Name: lessonName,
+				AcadUser: this.AcadUser,
+			})
+		}
 
 		const $ = Load(notesPage)
 		// Get header row with test data
 		const headers = $('tr#trAval *').toArray()
 		if (!headers) {
-			console.log(lesson)
 			return
 		}
 		// Get line with notes
 		const cell = $('tr.linhaPar td').toArray()
 		let i = 0
 		let note: INote | undefined
-		headers.map((header) => {
+		headers.map(header => {
 			if (header.tagName === 'th') {
 				i++
 				if (note) {
@@ -152,16 +157,22 @@ export default class AcadClient {
 			}
 		})
 		if (lesson.isModified()) {
-			this.notifyUser(lesson)
-			lesson.save()
+			await this.notifyUser(lesson)
+			await lesson.save()
 		}
 	}
 
 	async notifyUser(lesson: ILesson): Promise<any> {
-		await this.httpClient.Post('https://msging.net/messages', {
-			to: lesson.StudentIdentity,
-			type: 'text/plain',
-			content: lesson.toString(),
-		})
+		await this.httpClient.Post(
+			'https://msging.net/messages',
+			{
+				to: this.BlipIdentity,
+				type: 'text/plain',
+				content: lesson.toString(),
+			},
+			{
+				authorization: CONSTANTS.AUTHORIZATION_HEADER,
+			},
+		)
 	}
 }

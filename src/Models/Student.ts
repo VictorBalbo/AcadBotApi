@@ -8,6 +8,7 @@ export interface IStudent extends Document {
 }
 
 const StudentSchema = new Schema({
+	_id: String,
 	Name: String,
 	BlipIdentity: String,
 	AcadUser: String,
