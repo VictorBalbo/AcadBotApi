@@ -22,8 +22,8 @@ StudentSchema.pre('save', function(this: any, next) {
 })
 
 StudentSchema.post('find', function(this: any) {
-	this.AcadUser = Buffer.from(this.AcadUser, 'base64').toString()
-	this.AcadPassword = Buffer.from(this.AcadPassword, 'base64').toString()
+	if (this.AcadUser) this.AcadUser = Buffer.from(this.AcadUser, 'base64').toString()
+	if (this.AcadPassword) this.AcadPassword = Buffer.from(this.AcadPassword, 'base64').toString()
 })
 
 export const Student = model<IStudent>('Student', StudentSchema)
