@@ -1,4 +1,5 @@
-import { Schema, model, Document } from 'mongoose'
+import { Document, Schema, model } from 'mongoose'
+import { CONSTANTS } from '../Constants'
 
 export interface IStudent extends Document {
 	Name: string
@@ -16,14 +17,18 @@ const StudentSchema = new Schema({
 })
 
 StudentSchema.pre('save', function(this: any, next) {
-	this.AcadUser = Buffer.from(this.AcadUser).toString('base64')
-	this.AcadPassword = Buffer.from(this.AcadPassword).toString('base64')
+	this.AcadUser = Buffer.from(this.AcadUser).toString(CONSTANTS.ENCODING)
+	this.AcadPassword = Buffer.from(this.AcadPassword).toString(
+		CONSTANTS.ENCODING,
+	)
 	next()
 })
 
-StudentSchema.post('find', function(this: any) {
-	if (this.AcadUser) this.AcadUser = Buffer.from(this.AcadUser, 'base64').toString()
-	if (this.AcadPassword) this.AcadPassword = Buffer.from(this.AcadPassword, 'base64').toString()
-})
+export const getAcadData = (AcadUser: string, AcadPassword: string) => {
+	return {
+		AcadUser: Buffer.from(AcadUser, CONSTANTS.ENCODING).toString(),
+		AcadPassword: Buffer.from(AcadPassword, CONSTANTS.ENCODING).toString(),
+	}
+}
 
 export const Student = model<IStudent>('Student', StudentSchema)

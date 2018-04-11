@@ -1,14 +1,14 @@
 import { Express } from 'express'
 import {
-	ListLessons,
-	GetLessonByStudent,
-	GetParsedLessonByStudent,
-} from '../controllers/LessonController'
-import {
-	GetStudent,
 	CreateStudent,
+	GetStudent,
 	ListStudents,
 } from '../Controllers/StudentController'
+import {
+	GetLessonByStudent,
+	GetParsedLessonByStudent,
+	ListLessons,
+} from '../controllers/LessonController'
 
 export const Route = (app: Express) => {
 	app.route('/lessons').get(ListLessons)

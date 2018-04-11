@@ -1,8 +1,8 @@
-import { load as Load } from 'cheerio'
-import { HttpClient } from './httpClient'
-import { Note, INote } from '../Models/Note'
-import { Lesson, ILesson } from '../Models/Lesson'
+import { load } from 'cheerio'
 import { CONSTANTS } from '../Constants'
+import { ILesson, Lesson } from '../Models/Lesson'
+import { INote, Note } from '../Models/Note'
+import { HttpClient } from './httpClient'
 
 const DISCENTE_URL =
 	'https://sig.cefetmg.br/sigaa/portais/discente/discente.jsf'
@@ -68,17 +68,45 @@ export default class AcadClient {
 				DISCENTE_URL,
 				lessonsRequests[i],
 			)
+
+			// Get lesson
+			const lessonName = this.GetLessonName(lessonPage)
+			let lesson = await Lesson.findOne({
+				Name: lessonName,
+				AcadUser: this.AcadUser,
+			})
+			if (!lesson) {
+				lesson = new Lesson({
+					Name: lessonName,
+					AcadUser: this.AcadUser,
+				})
+			}
+
+			// Get lesson notes
 			const notesRequest = this.MountNotesRequest(lessonPage)
 			const notesPage = await this.httpClient.SendRequest(
 				INDEX_URL,
 				notesRequest,
 			)
-			this.ParseNotes(notesPage, this.GetLessonName(lessonPage))
+			lesson.Notes = await this.ParseNotes(notesPage)
+
+			// Get lesson presence
+			const presenceRequest = this.MountPresenceRequest(lessonPage)
+			const presencePage = await this.httpClient.SendRequest(
+				INDEX_URL,
+				presenceRequest,
+			)
+			lesson.Faults = this.ParsePresence(presencePage)
+
+			if (lesson.isModified()) {
+				await this.notifyUser(lesson)
+				await lesson.save()
+			}
 		}
 	}
 
 	private MountLessonsRequests(homePage: string): Object[] {
-		const $ = Load(homePage)
+		const $ = load(homePage)
 		const formList = $('form[id^=form_acessarTurmaVirtual]').toArray()
 		const formData: Object[] = []
 		formList.map(element => {
@@ -96,7 +124,7 @@ export default class AcadClient {
 	}
 
 	private MountNotesRequest(lessonPage: string): Object {
-		const $ = Load(lessonPage)
+		const $ = load(lessonPage)
 		return {
 			formMenu: 'formMenu',
 			'formMenu:j_id_jsp_311393315_46': 'formMenu:j_id_jsp_311393315_67',
@@ -105,24 +133,23 @@ export default class AcadClient {
 		}
 	}
 
+	private MountPresenceRequest(lessonPage: string): Object {
+		const $ = load(lessonPage)
+		return {
+			formMenu: 'formMenu',
+			'formMenu:j_id_jsp_311393315_46': 'formMenu:j_id_jsp_311393315_67',
+			'formMenu:j_id_jsp_311393315_70': 'formMenu:j_id_jsp_311393315_70',
+			'javax.faces.ViewState': $('#javax\\.faces\\.ViewState').attr('value'),
+		}
+	}
+
 	private GetLessonName(lessonPage: string): string {
-		const $ = Load(lessonPage)
+		const $ = load(lessonPage)
 		return $('#linkNomeTurma').text()
 	}
 
-	private async ParseNotes(notesPage: string, lessonName: string) {
-		let lesson = await Lesson.findOne({
-			Name: lessonName,
-			AcadUser: this.AcadUser,
-		})
-		if (!lesson) {
-			lesson = new Lesson({
-				Name: lessonName,
-				AcadUser: this.AcadUser,
-			})
-		}
-
-		const $ = Load(notesPage)
+	private async ParseNotes(notesPage: string) {
+		const $ = load(notesPage)
 		// Get header row with test data
 		const headers = $('tr#trAval *').toArray()
 		if (!headers) {
@@ -131,12 +158,13 @@ export default class AcadClient {
 		// Get line with notes
 		const cell = $('tr.linhaPar td').toArray()
 		let i = 0
-		let note: INote | undefined
+		let note: INote
+		const notes: INote[] = []
 		headers.map(header => {
 			if (header.tagName === 'th') {
 				i++
 				if (note) {
-					lesson!.Notes.push(note)
+					notes.push(note)
 				}
 				if (header.attribs.id) {
 					// Note
@@ -156,10 +184,23 @@ export default class AcadClient {
 				note!.Max = header.attribs.value
 			}
 		})
-		if (lesson.isModified()) {
-			await this.notifyUser(lesson)
-			await lesson.save()
-		}
+		return notes
+	}
+
+	private ParsePresence(presencePage: string) {
+		const $ = load(presencePage)
+		const divElement = $('fieldset div.botoes-show').first()
+		const frequencyData = divElement
+			.clone() // clone the element
+			.children() // select all the children
+			.remove() // remove all the children
+			.end() // again go back to selected element
+			.text() // get the text of element
+			.trim() // trim left and right
+			.replace(/ +(?= )/g, '') // remove multiple white spaces
+			.split(' ') // Split data
+
+		return Number(frequencyData[1]) - Number(frequencyData[0])
 	}
 
 	async notifyUser(lesson: ILesson): Promise<any> {

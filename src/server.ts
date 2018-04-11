@@ -1,7 +1,7 @@
-import * as express from 'express'
 import * as bodyParser from 'body-parser'
-import { Route } from './Routes/Route'
+import * as express from 'express'
 import { CONSTANTS } from './Constants'
+import { Route } from './Routes/Route'
 
 const app = express()
 const mongoose = require('mongoose')

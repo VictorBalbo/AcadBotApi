@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
-import { Student } from '../Models/Student'
 import SigClient from '../Clients/SigClient'
+import { IStudent, Student, getAcadData } from '../Models/Student'
 
 export const ListStudents = async (request: Request, response: Response) => {
 	try {
@@ -14,16 +14,10 @@ export const ListStudents = async (request: Request, response: Response) => {
 export const CreateStudent = async (request: Request, response: Response) => {
 	const student = new Student(request.body)
 	student._id = student.AcadUser
-	const AcadUser = student.AcadUser
-	const AcadPassword = student.AcadPassword
 	try {
 		await student.save()
+		await FetchStudent(student)
 		response.json(student)
-		await FetchStudent({
-			BlipIdentity: student.BlipIdentity,
-			AcadUser,
-			AcadPassword,
-		})
 	} catch (error) {
 		response.send(error)
 	}
@@ -38,12 +32,12 @@ export const GetStudent = async (request: Request, response: Response) => {
 	}
 }
 
-export const FetchStudent = async ({
-	AcadUser,
-	AcadPassword,
-	BlipIdentity,
-}) => {
+export const FetchStudent = async (student: IStudent) => {
+	const { AcadUser, AcadPassword } = await getAcadData(
+		student.AcadUser,
+		student.AcadPassword,
+	)
 	console.log(`Fetching for ${AcadUser}`)
-	const client = new SigClient(AcadUser, AcadPassword, BlipIdentity)
+	const client = new SigClient(AcadUser, AcadPassword, student.BlipIdentity)
 	await client.FetchNotes()
 }
