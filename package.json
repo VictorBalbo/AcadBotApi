@@ -5,8 +5,9 @@
 	"main": "index.js",
 	"scripts": {
 		"watch": "tsc -w",
-		"start": "tsc && node ./dist/index",
-		"dev": "nodemon -e ts --exec \"npm start\"",
+		"start": "npm install && npm run compile",
+		"compile": "tsc && node ./dist/index",
+		"dev": "nodemon -e ts --exec \"npm run compile\"",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"author": "Victor Balbo",
