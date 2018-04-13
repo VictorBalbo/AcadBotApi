@@ -2,7 +2,7 @@ import { load } from 'cheerio'
 import { CONSTANTS } from '../Constants'
 import { ILesson, Lesson } from '../Models/Lesson'
 import { INote, Note } from '../Models/Note'
-import { HttpClient } from './httpClient'
+import { HttpClient } from './HttpClient'
 
 const DISCENTE_URL =
 	'https://sig.cefetmg.br/sigaa/portais/discente/discente.jsf'

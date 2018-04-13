@@ -8,7 +8,7 @@ import {
 	GetLessonByStudent,
 	GetParsedLessonByStudent,
 	ListLessons,
-} from '../controllers/LessonController'
+} from '../Controllers/LessonController'
 
 export const Route = (app: Express) => {
 	app.route('/lessons').get(ListLessons)
