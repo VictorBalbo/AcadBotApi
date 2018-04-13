@@ -88,7 +88,8 @@ export default class AcadClient {
 				INDEX_URL,
 				notesRequest,
 			)
-			lesson.Notes = await this.ParseNotes(notesPage)
+			const notes = await this.ParseNotes(notesPage)
+			if (lesson.Notes !== notes) lesson.Notes = notes
 
 			// Get lesson presence
 			const presenceRequest = this.MountPresenceRequest(lessonPage)
@@ -96,7 +97,9 @@ export default class AcadClient {
 				INDEX_URL,
 				presenceRequest,
 			)
-			lesson.Faults = this.ParsePresence(presencePage)
+			const faults = this.ParsePresence(presencePage)
+			if (lesson.Faults !== faults) lesson.Faults = faults		
+			
 
 			if (lesson.isModified()) {
 				await this.notifyUser(lesson)

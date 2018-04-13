@@ -18,7 +18,7 @@ const LessonSchema = new Schema({
 LessonSchema.methods.toString = function(): string {
 	let lessonString = `<b>${this.Name}</b> \n`
 	if (this.Faults) lessonString += `${this.Faults} Faltas \n`
-	if (this.Notes.length === 0) return lessonString + 'Sem notas'
+	if (this.Notes.length === 0) return lessonString + 'Sem notas\n'
 	this.Notes.forEach((note: String) => {
 		lessonString += note.toString()
 	})
