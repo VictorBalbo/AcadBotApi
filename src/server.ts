@@ -20,7 +20,7 @@ export class Server {
 	start() {
 		Route(app)
 
-		app.listen(port, () => {
+		return app.listen(port, () => {
 			console.log('API server started on: ' + port)
 		})
 	}
