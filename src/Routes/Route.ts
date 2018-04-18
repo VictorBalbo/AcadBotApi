@@ -21,6 +21,10 @@ export const Route = (app: Express) => {
 		.post(CreateStudent)
 	app.route('/students/:acadUser').get(GetStudent)
 
+	app.route('/').get((request, response) => {
+		response.send('Hello world!')
+	})
+
 	app.use(function(req, res) {
 		res.status(404).send({ url: req.originalUrl + ' not found' })
 	})
