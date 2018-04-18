@@ -2,14 +2,13 @@ import { FetchStudent } from './Controllers/StudentController'
 import { Student } from './Models/Student'
 import { Server } from './server'
 import * as Request from 'request-promise-native'
+import { CONSTANTS } from './Constants'
 
 const server = new Server()
-const expressServer = server.start()
-
-const address = `http://${expressServer.address().address}:${expressServer.address().port}`
+server.start()
 
 async function updateNotes() {
-	Request({uri: address})
+	Request({uri: CONSTANTS.ADDRESS})
 	try {
 		const students = await Student.find()
 		students.forEach(async student => {

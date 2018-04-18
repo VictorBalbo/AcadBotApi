@@ -1,9 +1,11 @@
 const AUTHORIZATION_HEADER = process.env.AUTHORIZATION_HEADER
 const DATABASE_URL = process.env.MONGODB_URI
 const ENCODING = process.env.ENCODING
+const ADDRESS = process.env.ADDRESS
 
 export const CONSTANTS = {
 	AUTHORIZATION_HEADER,
 	DATABASE_URL,
 	ENCODING,
+	ADDRESS,
 }
