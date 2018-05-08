@@ -71,6 +71,9 @@ export default class AcadClient {
 
 			// Get lesson
 			const lessonName = this.GetLessonName(lessonPage)
+			if (!lessonName) {
+				return
+			}
 			let lesson = await Lesson.findOne({
 				Name: lessonName,
 				AcadUser: this.AcadUser,
