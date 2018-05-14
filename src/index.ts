@@ -18,5 +18,5 @@ async function updateNotes() {
 		console.log(error)
 	}
 }
-setInterval(updateNotes, 1200000) // 20 Mins
+setInterval(updateNotes, 900000) // 15 Mins
 updateNotes()
