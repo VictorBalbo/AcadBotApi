@@ -8,6 +8,7 @@ const DISCENTE_URL =
 	'https://sig.cefetmg.br/sigaa/portais/discente/discente.jsf'
 const INDEX_URL = 'https://sig.cefetmg.br/sigaa/ava/index.jsf'
 const LOGIN_URL = 'https://sig.cefetmg.br/sigaa/logar.do?dispatch=logOn'
+const LOGOUT_URL = 'https://sig.cefetmg.br/sigaa/logar.do?dispatch=logOff'
 
 export default class AcadClient {
 	httpClient: HttpClient
@@ -34,6 +35,7 @@ export default class AcadClient {
 	 * @memberof SigClient
 	 */
 	async FetchNotes(): Promise<any> {
+		await this.httpClient.SendRequest(LOGOUT_URL)					
 		await this.Login(this.AcadUser, this.AcadPassword)
 		const homePage = await this.DismissNotification()
 		await this.OpenLessons(homePage)
@@ -60,7 +62,8 @@ export default class AcadClient {
 	private async OpenLessons(homePage: string) {
 		const lessonsRequests = this.MountLessonsRequests(homePage)
 		if (lessonsRequests.length === 0) {
-			throw Error('Epa, não tem materia nenhuma D:')
+			console.log('Epa, não tem materia nenhuma D:')
+			return
 		}
 
 		for (let i = 0; i < lessonsRequests.length; i++) {
@@ -162,7 +165,7 @@ export default class AcadClient {
 			return
 		}
 		// Get line with notes
-		const cell = $('tr.linhaPar td').toArray()
+		const cell = $('tbody tr td').toArray()
 		let i = 0
 		let note: INote
 		const notes: INote[] = []
