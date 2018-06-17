@@ -95,7 +95,7 @@ export default class AcadClient {
 				notesRequest,
 			)
 			const notes = await this.ParseNotes(notesPage)
-			if (lesson.Notes.length !== notes.length) lesson.Notes = notes
+			if (lesson.Notes.length !== notes.length && notes.length > 0) lesson.Notes = notes
 
 			// Get lesson presence
 			const presenceRequest = this.MountPresenceRequest(lessonPage)
