@@ -19,9 +19,12 @@ LessonSchema.methods.toString = function(): string {
 	let lessonString = `*${this.Name}* \n`
 	if (this.Faults) lessonString += `${this.Faults} Faltas \n`
 	if (this.Notes.length === 0) return lessonString + 'Sem notas\n'
-	this.Notes.forEach((note: String) => {
+	let total = 0
+	this.Notes.forEach((note: INote) => {
 		lessonString += note.toString()
+		total += parseInt(note.Value)
 	})
+	lessonString += `Total: ${total}`
 	return lessonString
 }
 
