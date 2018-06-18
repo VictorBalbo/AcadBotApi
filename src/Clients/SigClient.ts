@@ -172,7 +172,7 @@ export default class AcadClient {
 		headers.map(header => {
 			if (header.tagName === 'th') {
 				i++
-				if (note && note.Value) {
+				if (note && note.Value && note.Name !== 'Nota') {
 					notes.push(note)
 				}
 				if (header.attribs.id) {
