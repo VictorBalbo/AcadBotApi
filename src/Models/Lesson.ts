@@ -23,8 +23,8 @@ LessonSchema.methods.toString = function(): string {
 	let sumMax = 0
 	this.Notes.forEach((note: INote) => {
 		lessonString += note.toString()
-		sumValue += parseFloat(note.Value)
-		sumMax += parseFloat(note.Max ? note.Max : '0') 
+		sumValue += parseFloat(note.Value.replace(',', '.'))
+		sumMax += parseFloat(note.Max ? note.Max.replace(',', '.') : '0.0') 
 	})
 	lessonString += `Total: ${sumValue}`
 	if (this.sumMax > 0) lessonString += `/${sumMax}`
