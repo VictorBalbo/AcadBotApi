@@ -8,6 +8,7 @@ const DISCENTE_URL =
 	'https://sig.cefetmg.br/sigaa/portais/discente/discente.jsf'
 const INDEX_URL = 'https://sig.cefetmg.br/sigaa/ava/index.jsf'
 const LOGIN_URL = 'https://sig.cefetmg.br/sigaa/logar.do?dispatch=logOn'
+const LOGOUT_URL = 'https://sig.cefetmg.br/sigaa/logar.do?dispatch=logOff'
 
 export default class AcadClient {
 	httpClient: HttpClient
@@ -34,6 +35,7 @@ export default class AcadClient {
 	 * @memberof SigClient
 	 */
 	async FetchNotes(): Promise<any> {
+		await this.httpClient.SendRequest(LOGOUT_URL)					
 		await this.Login(this.AcadUser, this.AcadPassword)
 		const homePage = await this.DismissNotification()
 		await this.OpenLessons(homePage)
@@ -60,7 +62,8 @@ export default class AcadClient {
 	private async OpenLessons(homePage: string) {
 		const lessonsRequests = this.MountLessonsRequests(homePage)
 		if (lessonsRequests.length === 0) {
-			throw Error('Epa, não tem materia nenhuma D:')
+			console.log('Epa, não tem materia nenhuma D:')
+			return
 		}
 
 		for (let i = 0; i < lessonsRequests.length; i++) {
@@ -71,6 +74,9 @@ export default class AcadClient {
 
 			// Get lesson
 			const lessonName = this.GetLessonName(lessonPage)
+			if (!lessonName) {
+				return
+			}
 			let lesson = await Lesson.findOne({
 				Name: lessonName,
 				AcadUser: this.AcadUser,
@@ -89,7 +95,7 @@ export default class AcadClient {
 				notesRequest,
 			)
 			const notes = await this.ParseNotes(notesPage)
-			if (lesson.Notes.length !== notes.length) lesson.Notes = notes
+			if (lesson.Notes.length !== notes.length && notes.length > 0) lesson.Notes = notes
 
 			// Get lesson presence
 			const presenceRequest = this.MountPresenceRequest(lessonPage)
@@ -162,14 +168,14 @@ export default class AcadClient {
 			return
 		}
 		// Get line with notes
-		const cell = $('tr.linhaPar td').toArray()
+		const cell = $('tbody tr td').toArray()
 		let i = 0
 		let note: INote
 		const notes: INote[] = []
 		headers.map(header => {
 			if (header.tagName === 'th') {
 				i++
-				if (note && note.Value) {
+				if (note && note.Value && note.Name !== 'Nota') {
 					notes.push(note)
 				}
 				if (header.attribs.id) {
