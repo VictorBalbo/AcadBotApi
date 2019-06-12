@@ -1,6 +1,6 @@
 import { load } from 'cheerio'
 import { CONSTANTS } from '../Constants'
-import { ILesson, Lesson } from '../Models/Lesson'
+import { Lesson } from '../Models/Lesson'
 import { INote, Note } from '../Models/Note'
 import { HttpClient } from './HttpClient'
 
@@ -108,8 +108,17 @@ export default class AcadClient {
 			
 
 			if (lesson.isModified()) {
-				await this.notifyUser(lesson)
+				await this.notifyUser(lesson.toString())
 				await lesson.save()
+			}
+
+			// Get last lesson news
+			const lessonLastNew = this.GetLessonLastNews(lessonPage)
+			if (lessonLastNew && (!lesson.LastNews || lesson.LastNews !== lessonLastNew)) {
+				lesson.LastNews = lessonLastNew
+				await this.notifyUser(`Noticia de ${lesson.Name}: \n\n ${lesson.LastNews}`)
+				await lesson.save()
+
 			}
 		}
 	}
@@ -158,6 +167,16 @@ export default class AcadClient {
 	private GetLessonName(lessonPage: string): string {
 		const $ = load(lessonPage)
 		return $('#linkNomeTurma').text()
+	}
+
+	private GetLessonLastNews(lessonPage: string): string {
+		const $ = load(lessonPage)
+		return $('#ultimaNoticia')
+			.children('p')
+			.toArray()
+			.map(p => p.firstChild.data)
+			.join('\n')
+			
 	}
 
 	private async ParseNotes(notesPage: string) {
@@ -215,13 +234,13 @@ export default class AcadClient {
 		return Number(frequencyData[1]) - Number(frequencyData[0])
 	}
 
-	async notifyUser(lesson: ILesson): Promise<any> {
+	async notifyUser(content: string): Promise<any> {
 		await this.httpClient.Post(
 			'https://msging.net/messages',
 			{
 				to: this.BlipIdentity,
 				type: 'text/plain',
-				content: lesson.toString(),
+				content: content,
 			},
 			{
 				authorization: CONSTANTS.AUTHORIZATION_HEADER,

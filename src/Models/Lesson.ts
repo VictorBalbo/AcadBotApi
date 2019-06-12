@@ -5,6 +5,7 @@ export interface ILesson extends Document {
 	Name: String
 	Notes: INote[]
 	Faults: Number
+	LastNews: String
 	AcadUser: String
 }
 
@@ -12,6 +13,7 @@ const LessonSchema = new Schema({
 	Name: String,
 	Notes: [NoteSchema],
 	Faults: Number,
+	LastNews: String,
 	AcadUser: String,
 })
 
