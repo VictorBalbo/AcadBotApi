@@ -118,7 +118,10 @@ export default class AcadClient {
 				if (child.tagName === 'input') {
 					lesson[child.attribs.name] = child.attribs.value
 				} else if (child.tagName === 'a') {
-					lesson[child.attribs.id] = child.attribs.id
+					const turmaVirtual = child.attribs.onclick.match(/{'(form_acessarTurmaVirtual\w*:\w*)':'(form_acessarTurmaVirtual\w*:\w*)'/)
+					lesson[turmaVirtual[1]] = turmaVirtual[2]
+					const frontEndIdTurma = child.attribs.onclick.match(/'(frontEndIdTurma)':'(\w*)'/)
+					lesson[frontEndIdTurma[1]] = frontEndIdTurma[2]
 				}
 			})
 			formData.push(lesson)
@@ -130,8 +133,8 @@ export default class AcadClient {
 		const $ = load(lessonPage)
 		return {
 			formMenu: 'formMenu',
-			'formMenu:j_id_jsp_311393315_46': 'formMenu:j_id_jsp_311393315_67',
-			'formMenu:j_id_jsp_311393315_72': 'formMenu:j_id_jsp_311393315_72',
+			'formMenu:j_id_jsp_311393315_49': 'formMenu:j_id_jsp_311393315_70',
+			'formMenu:j_id_jsp_311393315_75': 'formMenu:j_id_jsp_311393315_75',
 			'javax.faces.ViewState': $('#javax\\.faces\\.ViewState').attr('value'),
 		}
 	}
@@ -140,8 +143,8 @@ export default class AcadClient {
 		const $ = load(lessonPage)
 		return {
 			formMenu: 'formMenu',
-			'formMenu:j_id_jsp_311393315_46': 'formMenu:j_id_jsp_311393315_67',
-			'formMenu:j_id_jsp_311393315_70': 'formMenu:j_id_jsp_311393315_70',
+			'formMenu:j_id_jsp_311393315_49': 'formMenu:j_id_jsp_311393315_70',
+			'formMenu:j_id_jsp_311393315_73': 'formMenu:j_id_jsp_311393315_73',
 			'javax.faces.ViewState': $('#javax\\.faces\\.ViewState').attr('value'),
 		}
 	}
